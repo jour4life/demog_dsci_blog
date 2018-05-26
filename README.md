@@ -1,1 +1,1 @@
-# demog_dsci_blog
+# Demographer, Sociologist, and Data Science Tools Enthusiast
