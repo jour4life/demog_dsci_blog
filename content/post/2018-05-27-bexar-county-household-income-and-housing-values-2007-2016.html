@@ -39,7 +39,7 @@ suppressMessages(library(dplyr))
 suppressMessages(library(stringr))
 suppressMessages(library(ggplot2))
 
-path_to_files &lt;- &#39;../../data/aff_download-financial_characteristics-1yr&#39;
+path_to_files &lt;- &#39;../../content/data/aff_download-financial_characteristics-1yr&#39;
 
 hu_financial_files &lt;- list.files(path = paste(path_to_files, &#39;/&#39;,
                                               sep=&#39;&#39;),
@@ -50,7 +50,7 @@ hu_financial &lt;- paste(path_to_files,
                       hu_financial_files, 
                       sep=&#39;&#39;)
 
-cpi &lt;- read.csv(&#39;../../data/allitems.csv&#39;) 
+cpi &lt;- read.csv(&#39;../../content/data/allitems.csv&#39;) 
 
 cpi &lt;- cpi %&gt;%
   select(dataset, AVG) %&gt;%
