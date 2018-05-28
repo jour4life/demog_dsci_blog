@@ -1,18 +1,3 @@
----
-title: Bexar County Household Income and Housing Values, 2007-2016
-author: Carlos
-date: '2018-05-27'
-slug: bexar-county-household-income-and-housing-values-2007-2016
-categories:
-  - Analysis
-  - Census
-tags:
-  - R
-  - R Markdown
-  - Census
-subtitle: ''
----
-
 
 
 <p>My hometown of San Antonio added the most residents than any other city in the country between 2016 and 2017 <a href="https://census.gov/newsroom/press-releases/2018/estimates-cities.html?CID=CBSM+pop18">(link)</a>. Since 2007, the population in San Antonio and surrounding areas have grown rapidly. One of the questions I have is, how have recent changes impacted housing values in the area during this time? How has household income fared in comparison? These questions are important because rapid changes in population can put a strain on the housing supply, which can lead to drastic increasing housing values due to a limited housing supply. As a result, households may end up having to pay a substantially higher portion of household income towards housing costs, especially if household income does not increase at the same rate.</p>
@@ -151,7 +136,7 @@ ggplot(hu_financial_data.texas,
   facet_wrap(~variable, scales=&#39;free&#39;) +
   theme(panel.background=element_blank(),
         legend.position = &#39;bottom&#39;)</code></pre>
-<p><img src="/post/2018-05-27-bexar-county-household-income-and-housing-values-2007-2016_files/figure-html/unnamed-chunk-3-1.png" width="768" /></p>
+<p><img src="2018-05-27-bexar-county-household-income-and-housing-values-2007-2016_files/figure-html/unnamed-chunk-3-1.png" width="768" /></p>
 <p>It appears that the rise in housing values is steeper than household income. But this could be misleading, especially since the scales (or minimum and maximum values) on the graphs are different. What if we compare the percent change, using values in 2007 as the baseline?</p>
 <p>As you can see on the plot below, the increase in housing values between 2007 and 2016 was steeper than the increase in household income in both Texas and Bexar County. In fact, growth in housing values increased about twice as much than the growth in household income.</p>
 <pre class="r"><code># Plot
@@ -164,6 +149,6 @@ ggplot(hu_financial_data.texas,
   facet_wrap(~variable) +
   theme(panel.background=element_blank(),
         legend.position = &#39;bottom&#39;)</code></pre>
-<p><img src="/post/2018-05-27-bexar-county-household-income-and-housing-values-2007-2016_files/figure-html/unnamed-chunk-4-1.png" width="768" /></p>
-<p>The results indicate that there could be a strain on the housing supply. This is unsurpriising, since this is true in most large cities of the country that also experienced rapid population growth. However, I believe I still need to look at changes in the housing supply to see and what areas of the city are seeing the most change.</p>
+<p><img src="2018-05-27-bexar-county-household-income-and-housing-values-2007-2016_files/figure-html/unnamed-chunk-4-1.png" width="768" /></p>
+<p>The results indicate that there could be a strain on the housing supply. This is unsurprising, since this is true in most large cities of the country that also experienced rapid population growth. However, I believe I still need to look at changes in the housing supply to see and what areas of the city are seeing the most change.</p>
 <p>In a future post, I will observe the growth in housing supply during the same time period.</p>
