@@ -183,6 +183,6 @@ ggplot(hu_financial_data.texas,
 
 ```
 
-The results indicate that there could be a strain on the housing supply. This is unsurpriising, since this is true in most large cities of the country that also experienced rapid population growth. However, I believe I still need to look at changes in the housing supply to see and what areas of the city are seeing the most change. 
+The results indicate that there could be a strain on the housing supply. This is unsurprising, since this is true in most large cities of the country that also experienced rapid population growth. However, I believe I still need to look at changes in the housing supply to see and what areas of the city are seeing the most change. 
 
 In a future post, I will observe the growth in housing supply during the same time period.
