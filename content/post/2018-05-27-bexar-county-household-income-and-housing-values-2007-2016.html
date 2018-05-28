@@ -1,0 +1,169 @@
+---
+title: Bexar County Household Income and Housing Values, 2007-2016
+author: Carlos
+date: '2018-05-27'
+slug: bexar-county-household-income-and-housing-values-2007-2016
+categories:
+  - Analysis
+  - Census
+tags:
+  - R
+  - R Markdown
+  - Census
+subtitle: ''
+---
+
+
+
+<p>My hometown of San Antonio added the most residents than any other city in the country between 2016 and 2017 <a href="https://census.gov/newsroom/press-releases/2018/estimates-cities.html?CID=CBSM+pop18">(link)</a>. Since 2007, the population in San Antonio and surrounding areas have grown rapidly. One of the questions I have is, how have recent changes impacted housing values in the area during this time? How has household income fared in comparison? These questions are important because rapid changes in population can put a strain on the housing supply, which can lead to drastic increasing housing values due to a limited housing supply. As a result, households may end up having to pay a substantially higher portion of household income towards housing costs, especially if household income does not increase at the same rate.</p>
+<p>In this post, I use RStudio and R Markdown to analyze census data files (median housing unit value and median household income). I downloaded files 1-yr Summary Files for Bexar County and Texas between 2007 and 2016. In this case, I observe Bexar County (which comprises San Antonio) and compare values with those for Texas. In essence, I see how changes in housing unit values and household income fared between 2007 and 2016 and how Bexar County compares with the state as a whole.</p>
+<p>Here are the steps I take in order to read in the files, keep the columns I need, and merge them all into one dataset to display at the end.</p>
+<ol style="list-style-type: decimal">
+<li>Load R libraries I will use</li>
+<li>Create an object that gives the names of files we will read in with <em>ann</em>.csv and store as a list. We will use this to write a loop and read the files in one-by-one using a function.</li>
+<li>Read in CPI data. This is to adjust housing values and household income for inflation</li>
+<li>Create an emtpy data frame</li>
+<li>Write a function to read in the .csv files and merge all into one
+<ul>
+<li>Interestingly, the pattern of columns we keep change after 2010. Our function accounts for that using conditional logic</li>
+<li>Read in the files one-by-one and stack on top of each other</li>
+<li>Melt columns to rows</li>
+<li>Join with CPI dataset</li>
+<li>Create new variables</li>
+<li>Plot</li>
+</ul></li>
+</ol>
+<p><br></p>
+<pre class="r"><code>suppressMessages(library(readr))
+suppressMessages(library(dplyr))
+suppressMessages(library(stringr))
+suppressMessages(library(ggplot2))
+
+path_to_files &lt;- &#39;../../data/aff_download-financial_characteristics-1yr&#39;
+
+hu_financial_files &lt;- list.files(path = paste(path_to_files, &#39;/&#39;,
+                                              sep=&#39;&#39;),
+                                 pattern=&#39;*ann*.csv&#39;)
+
+hu_financial &lt;- paste(path_to_files, 
+                      &#39;/&#39;,
+                      hu_financial_files, 
+                      sep=&#39;&#39;)
+
+cpi &lt;- read.csv(&#39;../../data/allitems.csv&#39;) 
+
+cpi &lt;- cpi %&gt;%
+  select(dataset, AVG) %&gt;%
+  rename(cpi = AVG)
+
+hu_financial_data &lt;- data.frame()
+
+load_files &lt;- function(files, set_path){
+    return_x &lt;- data.frame()
+    for(i in files) {
+      tmp_col &lt;- suppressMessages(read_csv(paste(set_path, &#39;/&#39;,
+                                                 i, 
+                                                 sep=&#39;&#39;), 
+                                           n_max=1))
+      tmp_nam &lt;- substr(i, 1, 16)
+      tmp_num &lt;- as.integer(substr(i, 5, 6))
+      tmp_dat &lt;- suppressMessages(read_csv(paste(set_path, &#39;/&#39;,
+                                                 i, 
+                                                 sep=&#39;&#39;),
+                                           col_names=F, skip=2))
+      colnames(tmp_dat) &lt;- colnames(tmp_col)
+      tmp_dat$dataset &lt;- as.integer(paste(&#39;20&#39;, 
+                                          str_pad(tmp_num, 
+                                                  width=2, pad=&#39;0&#39;), 
+                                          sep=&#39;&#39;))
+      
+      if(tmp_num &lt; 10) {
+        tmp_dat &lt;- tmp_dat %&gt;%
+          select(GEO.id, GEO.id2, `GEO.display-label`, 
+                 dataset, HC01_EST_VC10, HC01_EST_VC26) %&gt;%
+          rename(housing_value = HC01_EST_VC10,
+                 household_income = HC01_EST_VC26)
+        }
+      else  {
+        tmp_dat &lt;- tmp_dat %&gt;%
+          select(GEO.id, GEO.id2, `GEO.display-label`, 
+                 dataset, HC01_EST_VC10, HC01_EST_VC28) %&gt;%
+          rename(housing_value = HC01_EST_VC10,
+                 household_income = HC01_EST_VC28)
+        }
+      
+      assign(tmp_nam, value=tmp_dat)
+      
+      return_x &lt;- bind_rows(return_x, tmp_dat)
+      
+      tmp_dat &lt;- NULL
+      tmp_col &lt;- NULL
+      tmp_nam &lt;- NULL
+    }
+    
+    # Melt the dataset
+    return_x &lt;- reshape2::melt(return_x,
+                               id.vars=c(&#39;GEO.id&#39;, &#39;GEO.id2&#39;, 
+                                         &#39;GEO.display-label&#39;, 
+                                         &#39;dataset&#39;))
+    
+    return_x &lt;- return_x %&gt;%
+      arrange(variable, dataset) %&gt;%
+      group_by(variable) %&gt;%
+      mutate(lag_value = lag(value),
+             pct_change = (value - lag_value) / lag_value)
+    
+    return(return_x)
+    }
+
+hu_financial_data &lt;- load_files(files = hu_financial_files,
+                                set_path = path_to_files)</code></pre>
+<pre class="r"><code># Now get bexar county
+hu_financial_data.bexar &lt;- load_files(files = hu_financial_files,
+                                      set_path = paste(path_to_files, &#39;-bexar&#39;, sep=&#39;&#39;))
+
+# Stack
+hu_financial_data.texas &lt;- bind_rows(hu_financial_data, 
+                                     hu_financial_data.bexar)
+
+hu_financial_data.texas &lt;- inner_join(hu_financial_data.texas, cpi)</code></pre>
+<pre><code>## Joining, by = &quot;dataset&quot;</code></pre>
+<pre class="r"><code>hu_financial_data.texas$value.infadj &lt;- as.integer((352.6/hu_financial_data.texas$cpi) * hu_financial_data.texas$value)
+
+baseline_inv &lt;- hu_financial_data.texas %&gt;%
+  filter(dataset == 2007) %&gt;%
+  select(GEO.id, variable, value.infadj) %&gt;%
+  rename(value.infadj.base = value.infadj)
+
+hu_financial_data.texas &lt;- inner_join(hu_financial_data.texas,
+                                      baseline_inv)</code></pre>
+<pre><code>## Joining, by = c(&quot;GEO.id&quot;, &quot;variable&quot;)</code></pre>
+<pre class="r"><code>hu_financial_data.texas &lt;- hu_financial_data.texas %&gt;%
+  mutate(pct_change.base = (value.infadj - value.infadj.base) / value.infadj.base)</code></pre>
+<p><br> First, we plot the actual inflation adjusted median housing values and household income. <br></p>
+<pre class="r"><code># Plot
+ggplot(hu_financial_data.texas,
+       aes(x=dataset, y=value.infadj,
+           group=`GEO.display-label`, 
+           colour=`GEO.display-label`)) +
+  geom_line() +
+  xlab(&#39;&#39;) +
+  facet_wrap(~variable, scales=&#39;free&#39;) +
+  theme(panel.background=element_blank(),
+        legend.position = &#39;bottom&#39;)</code></pre>
+<p><img src="/post/2018-05-27-bexar-county-household-income-and-housing-values-2007-2016_files/figure-html/unnamed-chunk-3-1.png" width="768" /></p>
+<p>It appears that the rise in housing values is steeper than household income. But this could be misleading, especially since the scales (or minimum and maximum values) on the graphs are different. What if we compare the percent change, using values in 2007 as the baseline?</p>
+<p>As you can see on the plot below, the increase in housing values between 2007 and 2016 was steeper than the increase in household income in both Texas and Bexar County. In fact, growth in housing values increased about twice as much than the growth in household income.</p>
+<pre class="r"><code># Plot
+ggplot(hu_financial_data.texas,
+       aes(x=dataset, y=pct_change.base,
+           group=`GEO.display-label`, 
+           colour=`GEO.display-label`)) +
+  geom_line() +
+  xlab(&#39;&#39;) +
+  facet_wrap(~variable) +
+  theme(panel.background=element_blank(),
+        legend.position = &#39;bottom&#39;)</code></pre>
+<p><img src="/post/2018-05-27-bexar-county-household-income-and-housing-values-2007-2016_files/figure-html/unnamed-chunk-4-1.png" width="768" /></p>
+<p>The results indicate that there could be a strain on the housing supply. This is unsurpriising, since this is true in most large cities of the country that also experienced rapid population growth. However, I believe I still need to look at changes in the housing supply to see and what areas of the city are seeing the most change.</p>
+<p>In a future post, I will observe the growth in housing supply during the same time period.</p>
