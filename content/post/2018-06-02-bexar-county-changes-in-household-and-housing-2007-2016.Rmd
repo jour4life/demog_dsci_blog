@@ -1,0 +1,280 @@
+---
+title: Bexar County Changes in Household and Housing, 2007-2016
+author: Carlos
+date: '2018-06-02'
+slug: bexar-county-changes-in-household-and-housing-2007-2016
+categories:
+  - Census
+  - Analysis
+tags:
+  - Census
+  - R
+  - R Markdown
+subtitle: ''
+---
+
+In the previous [post](https://carlosvalenzuela.netlify.com/post/bexar-county-household-income-and-housing-values-2007-2016/), I looked at changes in household income and housing values between 2007 and 2016. The reason for looking at these changes was due to a recent post provided by the US Census Bureau that stated San Antonio added the most residents between 2016 and 2017. 
+
+San Antonio, as much of Texas, experienced increased net in-migration since the Great Recession (2008). As a result, I wondered how these changes in population could have affected housing values. Moreover, I wondered if increases in household income kept similar pace. As we saw, median housing value increased 15% whereas the median household income increased roughly eight percent (when comparing 2016 to 2007 values). 
+
+However, it is unclear if changes in housing values in Bexar County, as well as Texas, is mainly due to increased in-migration from outside the state. There are other factors that contribute to increases in housing values, such as there being a limited housing supply due to not enough construction occurring, as well as increases in building costs and labor. In addition, the economy has recovered since the Great Recession. 
+
+I decided to conduct another analysis that looked at changes in the number of households, housing units, housing tenure, vacancy rate, and median housing costs. It is possible that the increase in housing units were outpaced by increase in the number of households. Median housing costs could have also increased during this time if housing values increased. 
+
+The steps I used to analyze data downloaded from the Census Bureau (American Fact Finder to be exact) are similar to those used in the previous post so I won't repeat the steps here.
+
+Here is the R code to read in the data and construct the plots.
+
+First, we load the necessary packages.
+
+```{r, results=FALSE, cache=FALSE}
+
+suppressMessages(library(dplyr))
+library(readr)
+library(stringr)
+library(ggplot2)
+library(tidyr)
+```
+
+Now, we read in the CPI data. This will be used to adjust median housing costs for inflation.
+
+```{r, results=FALSE, cache=FALSE}
+
+cpi <- read.csv('../..//content/data/allitems.csv') 
+
+cpi <- cpi %>%
+  select(dataset, AVG) %>%
+  rename(cpi = AVG)
+
+```
+
+Next, we create objects that will be used to read in the files one-by-one.
+
+```{r, results=FALSE, cache=FALSE}
+
+path_to_files <- '../../content/data/'
+
+housing <- 'aff_download-financial_characteristics-1yr-v2/'
+household <- 'aff_download-household-1yr/'
+
+hu_financial_files <- list.files(path = paste(path_to_files, 
+                                              housing, 
+                                              sep=''),
+                                 pattern='*ann*.csv')
+
+hu_financial <- paste(path_to_files, 
+                      housing, 
+                      sep='')
+
+household_files <- list.files(path = paste(path_to_files,
+                                           household,
+                                           sep=''),
+                              pattern = '*ann*.csv')
+
+household_file_path <- paste(path_to_files,
+                             household,
+                             sep = '')
+
+```
+
+Then, we write a function to loop through the files, read in and do some basic data manipulation, such as creating new and renaming variables.
+
+```{r, results=FALSE, cache=FALSE}
+
+load_files <- function(files, set_path){
+  return_x <- data.frame()
+  for(i in files) {
+    tmp_col <- suppressMessages(read_csv(paste(set_path,
+                                               i, 
+                                               sep=''), 
+                                         n_max=1))
+    tmp_nam <- substr(i, 1, 16)
+    tmp_num <- as.integer(substr(i, 5, 6))
+    tmp_dat <- suppressMessages(read_csv(paste(set_path,
+                                               i, 
+                                               sep=''),
+                                         col_names=F, skip=2))
+    colnames(tmp_dat) <- colnames(tmp_col)
+    tmp_dat$dataset <- as.integer(paste('20', 
+                                        str_pad(tmp_num, 
+                                                width=2, pad='0'), 
+                                        sep=''))
+      if(length(grep('DP', files)) > 0 & tmp_num %in% c(10:12)) {
+        tmp_dat <- tmp_dat %>%
+          select(GEO.id, GEO.id2, `GEO.display-label`,
+                 dataset, HC01_VC03, HC03_VC05,
+                 HC01_VC143, HC03_VC64) %>%
+          rename(housing_units = HC01_VC03,
+                 vacancy_rate = HC03_VC05,
+                 median_housing_costs = HC01_VC143,
+                 renter_occupied = HC03_VC64)
+        }
+      else  if (length(grep('DP', files)) > 0 & tmp_num %in% c(13:14)){
+        tmp_dat <- tmp_dat %>%
+          select(GEO.id, GEO.id2, `GEO.display-label`,
+                 dataset, HC01_VC03, HC03_VC05,
+                 HC01_VC145, HC03_VC65) %>%
+          rename(housing_units = HC01_VC03,
+                 vacancy_rate = HC03_VC05,
+                 median_housing_costs = HC01_VC145,
+                 renter_occupied = HC03_VC65)
+        }
+      else  if (length(grep('DP', files)) > 0 & tmp_num > 14){
+        tmp_dat <- tmp_dat %>%
+          select(GEO.id, GEO.id2, `GEO.display-label`,
+                 dataset, HC01_VC03, HC03_VC05,
+                 HC01_VC146, HC03_VC66) %>%
+          rename(housing_units = HC01_VC03,
+                 vacancy_rate = HC03_VC05,
+                 median_housing_costs = HC01_VC146,
+                 renter_occupied = HC03_VC66)
+        }
+      else if (length(grep('DP', files)) > 0 & tmp_num %in% c(8:9)){
+        tmp_dat <- tmp_dat %>%
+          select(GEO.id, GEO.id2, `GEO.display-label`,
+                 dataset, HC01_EST_VC02, HC02_EST_VC04,
+                 HC01_EST_VC114, HC02_EST_VC52) %>%
+          rename(housing_units = HC01_EST_VC02,
+                 vacancy_rate = HC02_EST_VC04,
+                 median_housing_costs = HC01_EST_VC114,
+                 renter_occupied = HC02_EST_VC52)
+        }
+      else if (length(grep('DP', files)) > 0 & tmp_num < 8) {
+        tmp_dat <- tmp_dat %>%
+          select(GEO.id, GEO.id2, `GEO.display-label`,
+                 dataset, HC01_EST_VC02, HC02_EST_VC04,
+                 HC01_EST_VC111, HC02_EST_VC52) %>%
+          rename(housing_units = HC01_EST_VC02,
+                 vacancy_rate = HC02_EST_VC04,
+                 median_housing_costs = HC01_EST_VC111,
+                 renter_occupied = HC02_EST_VC52)
+        }
+      else {
+        tmp_dat <- tmp_dat %>%
+          select(GEO.id, GEO.id2, `GEO.display-label`,
+                 dataset, HC01_EST_VC02) %>%
+          rename(households = HC01_EST_VC02)
+      }
+
+    assign(tmp_nam, value=tmp_dat)
+
+    return_x <- bind_rows(return_x, tmp_dat)
+
+    tmp_dat <- NULL
+    tmp_col <- NULL
+    tmp_nam <- NULL
+  }
+  
+  # Melt the dataset
+  return_x <- reshape2::melt(return_x,
+                             id.vars=c('GEO.id', 'GEO.id2', 
+                                       'GEO.display-label', 
+                                       'dataset'))
+  
+  return_x <- return_x %>%
+    arrange(GEO.id, variable, dataset) %>%
+    group_by(GEO.id, variable) %>%
+    mutate(lag_value = lag(value),
+           pct_change = (value - lag_value) / lag_value)
+  
+  return(return_x)
+}
+
+```
+
+Now that we have created our function, we will read in the files that contain housing data, such as the number of housing units, percent housing units that are renter-occupied, vacancy rate, and median housing costs.
+
+```{r, results=FALSE, cache=FALSE}
+
+hu_financial_data <- load_files(files = hu_financial_files, 
+                                set_path =  hu_financial)
+
+```
+
+We load the number of households data and stack on top of the data containing housing numbers. Then, we join with the CPI data.
+
+```{r, results=FALSE, cache=FALSE, warning=FALSE, message=FALSE}
+
+# Now household
+household_data <- load_files(files = household_files,
+                             set_path = household_file_path)
+
+# Stack
+hh.data <- bind_rows(hu_financial_data,
+                     household_data)
+
+hh.data <- inner_join(hh.data, cpi)
+
+```
+
+Let's take a look at housing costs before adjusting for inflation. Only look at first five observations.
+
+```{r}
+
+knitr::kable(hh.data %>%
+               filter(variable == 'median_housing_costs') %>%
+               select(GEO.id,'GEO.display-label', dataset, variable, value) %>%
+               head(.))
+
+```
+
+Adjust for inflation and look at data again.
+
+```{r, message=FALSE, warning=FALSE}
+
+# Adjust median housing costs for inflation
+hh.data$value <- ifelse(hh.data$variable == 'median_housing_costs',
+                        as.integer((352.6/hh.data$cpi) * hh.data$value),
+                        hh.data$value)
+
+knitr::kable(hh.data %>%
+               filter(variable == 'median_housing_costs') %>%
+               select(GEO.id,'GEO.display-label', dataset, variable, value) %>%
+               head(.))
+
+```
+
+```{r, cache=FALSE, warning=FALSE, message=FALSE}
+
+baseline_inv <- hh.data %>%
+  filter(dataset == 2007) %>%
+  select(GEO.id, variable, value) %>%
+  rename(value.base = value)
+
+hh.data <- inner_join(hh.data,
+                       baseline_inv)
+
+hh.data <- hh.data %>%
+  mutate(pct_change.base = (value - value.base) / value.base)
+
+# Print values for 2007 and 2016 only
+hh.data.sub <- hh.data %>%
+  filter(dataset %in% c(2007,2016)) %>%
+  select(dataset, `GEO.display-label`, variable, value) %>%
+  spread(dataset, value)
+
+hh.data.sub <- hh.data.sub %>%
+  mutate(pct_change = (`2016` - `2007`) / `2007`)
+
+knitr::kable(hh.data.sub)
+
+```
+
+Finally, plot changes since 2007.
+
+```{r}
+ggplot(hh.data,
+       aes(x=dataset, y=pct_change.base,
+           group=`GEO.display-label`, 
+           colour=`GEO.display-label`)) +
+  geom_line() +
+  xlab('') +
+  facet_wrap(~variable, scales='free') +
+  theme(panel.background=element_blank(),
+        legend.position = 'bottom')
+
+```
+
+As we can see, changes in the percent renter-occupied (tenure), vacancy rate, and median housing costs changed similarly in both Texas and Bexar County. 
+
+It appears that the growth in households and housing units were sharper in Bexar County, when compared to Texas, but converged by 2016. The growth in housing units and households between 2007 and 2016 were similar, roughly 15%. Median housing costs and vacancy rate actually declined since 2007 and started increasing by 2014, but still remains lower than 2007. Another intesting pattern is that changes in the percent of housing units that are renter-occupied increased during this time, roughly 12%. Essentially, the growth in housing units kept pace with the growth in households. However, it appears that growth in housing units could have been due to growth in apartment complexes since the percentage of housing units that are renter-occupied increased during this time. As a result, it could still mean that there is a shortage of single family dwellings that can increase housing demand and house prices. Again, this is a very simplistic view, but interesting nonetheless.
