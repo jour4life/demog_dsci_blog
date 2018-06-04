@@ -7,10 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <managingEditor>jour4life@gmail.com (Carlos Valenzuela)</managingEditor>
     <webMaster>jour4life@gmail.com (Carlos Valenzuela)</webMaster>
-    <lastBuildDate>Sat, 02 Jun 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 03 Jun 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Some Thanks and Other Thoughts</title>
+      <link>/post/some-thanks-and-other-thoughts/</link>
+      <pubDate>Sun, 03 Jun 2018 00:00:00 +0000</pubDate>
+      <author>jour4life@gmail.com (Carlos Valenzuela)</author>
+      <guid>/post/some-thanks-and-other-thoughts/</guid>
+      <description>I want to thank people in the R community for everything they do to, such as creating new packages and platforms for people to share their ideas to the world. I am really grateful to people like Yihui who created blogdown and bookdown. I can&amp;rsquo;t say enough of how blogdown has changed the way I document and communicate analyses with others&amp;hellip;and with such ease!
+I started using blogdown a couple of weeks ago and I can&amp;rsquo;t believe how easy it has been using blogdown to install hugo, write a post, and publish all in one place.</description>
+    </item>
     
     <item>
       <title>Bexar County Changes in Household and Housing, 2007-2016</title>
