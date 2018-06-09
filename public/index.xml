@@ -7,10 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <managingEditor>jour4life@gmail.com (Carlos Valenzuela)</managingEditor>
     <webMaster>jour4life@gmail.com (Carlos Valenzuela)</webMaster>
-    <lastBuildDate>Sun, 03 Jun 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 08 Jun 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Changes in Tenure among Single Family Housing Units in Bexar County, 2007-2016</title>
+      <link>/post/changes-in-tenure-among-single-family-housing-units-in-bexar-county-2007-2016/</link>
+      <pubDate>Fri, 08 Jun 2018 00:00:00 +0000</pubDate>
+      <author>jour4life@gmail.com (Carlos Valenzuela)</author>
+      <guid>/post/changes-in-tenure-among-single-family-housing-units-in-bexar-county-2007-2016/</guid>
+      <description>In a previous post, I found that renter occupied housing units in Bexar County (as well as the rest of Texas), increased 15% between 2007 and 2016. I mentioned it was possible that growth in housing units may have kept pace with that of households due to growth in apartment complexes. However, I wasn’t really sure if this was the case.
+During the Great Recession, many households lost their homes due to default, be it from job loss or rising interests rates for those with adjustable rate mortgages (ARM).</description>
+    </item>
     
     <item>
       <title>Some Thanks and Other Thoughts</title>

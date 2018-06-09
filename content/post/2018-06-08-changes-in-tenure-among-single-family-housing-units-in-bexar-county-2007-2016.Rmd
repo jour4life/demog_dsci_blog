@@ -1,0 +1,138 @@
+---
+title: Changes in Tenure among Single Family Housing Units in Bexar County, 2007-2016
+author: Carlos
+date: '2018-06-08'
+slug: changes-in-tenure-among-single-family-housing-units-in-bexar-county-2007-2016
+categories:
+  - Analysis
+  - Census
+tags:
+  - Census
+  - R Markdown
+subtitle: ''
+---
+
+In a previous [post](https://carlosvalenzuela.netlify.com/post/bexar-county-changes-in-household-and-housing-2007-2016/), I found that renter occupied housing units in Bexar County (as well as the rest of Texas), increased 15% between 2007 and 2016. I mentioned it was possible that growth in housing units may have kept pace with that of households due to growth in apartment complexes. However, I wasn't really sure if this was the case. 
+
+During the Great Recession, many households lost their homes due to default, be it from job loss or rising interests rates for those with adjustable rate mortgages (ARM). It could be that many housing units went from owner-occupied to renter-occupied status after foreclosure.
+
+Here, I analyze the distribution of housing units by type (i.e. single-unit, double-unit, multi-unit, etc.) between 2007 and 2016 from the American Community Survey (ACS), which I downloaded using the American Fact Finder. Specifically, I wanted to find out if the proportion of renter-occupied _single_-family housing units increased during this time period. This would give me an idea if many of the housing units went from owner- to renter-occupied status, which may have led to an overall increase in renter-occupied housing units during this time period.
+
+First, I read in the packages I will use. These have been the same as the previous two analytical posts.
+
+```{r }
+
+suppressMessages(library(readr))
+suppressMessages(library(dplyr))
+suppressMessages(library(stringr))
+suppressMessages(library(ggplot2))
+
+```
+
+Again, I write objects that correspond to location of datasets, as well as the dataset location and names.
+
+```{r}
+
+path_to_files <- '~/Blogs/demog_dsci_blog/content/data/aff_download-housing_tenure-1yr'
+
+housing_files <- list.files(path = paste(path_to_files, '/',
+                                         sep=''),
+                            pattern='*ann*.csv')
+
+housing <- paste(path_to_files,
+                 '/',
+                 housing_files, 
+                 sep='')
+
+```
+
+Then, I write a function to read in the files, create new variables, and save the dataset as a long dataset. I do this to make it easier to plot graphs.
+
+```{r}
+load_files <- function(files, set_path){
+  return_x <- data.frame()
+  for(i in files) {
+    tmp_col <- suppressMessages(read_csv(paste(set_path, '/',
+                                               i, 
+                                               sep=''), 
+                                         n_max=1))
+    tmp_nam <- substr(i, 1, 16)
+    tmp_num <- as.integer(substr(i, 5, 6))
+    tmp_dat <- suppressMessages(read_csv(paste(set_path, '/',
+                                               i, 
+                                               sep=''),
+                                         col_names=F, skip=2))
+    colnames(tmp_dat) <- colnames(tmp_col)
+    tmp_dat$dataset <- as.integer(paste('20', 
+                                        str_pad(tmp_num, 
+                                                width=2, pad='0'), 
+                                        sep=''))
+    
+    tmp_dat <- tmp_dat %>%
+      mutate(p_single_owner_units = (HD01_VD03 + HD01_VD04) / HD01_VD02,
+             p_multi_owner_units = 1 - p_single_owner_units,
+             p_single_renter_units = (HD01_VD14 + HD01_VD15) / HD01_VD13,
+             p_multi_renter_units = 1 - p_single_renter_units,
+             p_single_units_renter = (HD01_VD14 + HD01_VD15) / (HD01_VD14 + HD01_VD15 + HD01_VD03 + HD01_VD04)) %>%
+      select(GEO.id, GEO.id2, `GEO.display-label`,
+             dataset, grep('p_', names(.)))
+      #        %>%
+      # rename(housing_value = HC01_EST_VC10,
+      #        household_income = HC01_EST_VC26)
+
+    assign(tmp_nam, value=tmp_dat)
+    
+    return_x <- bind_rows(return_x, tmp_dat)
+    
+    tmp_dat <- NULL
+    tmp_col <- NULL
+    tmp_nam <- NULL
+  }
+  
+  # Melt the dataset
+  return_x <- reshape2::melt(return_x,
+                             id.vars=c('GEO.id', 'GEO.id2', 
+                                       'GEO.display-label', 
+                                       'dataset'))
+  
+  return_x <- return_x %>%
+    arrange(variable, dataset) %>%
+    group_by(GEO.id, GEO.id2, `GEO.display-label`, variable) %>%
+    mutate(lag_value = lag(value),
+           pct_change = (value - lag_value) / lag_value)
+  
+  return(return_x)
+}
+
+```
+
+Now, I use the function to read in the files and store as a data frame. 
+
+```{r}
+
+housing_data <- load_files(files = housing_files,
+                           set_path = path_to_files)
+
+```
+
+And finally plot!
+
+```{r}
+
+ggplot(subset(housing_data,
+              variable == 'p_single_units_renter'),
+       aes(x=dataset, value, 
+           group=`GEO.display-label`,
+           colour=`GEO.display-label`)) +
+  geom_line() +
+  ggtitle('Proportion Single Family Units that are Renter-Occupied') +
+  ylab('') +
+  xlab('Year') +
+  theme(panel.background = element_blank(),
+        legend.position = 'bottom')
+
+```
+
+As we can see on the plot, the proportion of _single_-family units that are renter-occupied increased between 2007 and 2016, though it appears to have leveled off since 2012, which lends some support to the idea illustrated earlier. 
+
+It is important to keep in mind that these data are rather dated. The latest survey year available from the ACS is 2016 and we are already in mid-2018. Things could have already changed, especially since the economy has improved since then.
