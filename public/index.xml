@@ -7,10 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <managingEditor>jour4life@gmail.com (Carlos Valenzuela)</managingEditor>
     <webMaster>jour4life@gmail.com (Carlos Valenzuela)</webMaster>
-    <lastBuildDate>Fri, 08 Jun 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 12 Jun 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Install QGIS with Anaconda</title>
+      <link>/post/install-qgis-with-anaconda/</link>
+      <pubDate>Tue, 12 Jun 2018 00:00:00 +0000</pubDate>
+      <author>jour4life@gmail.com (Carlos Valenzuela)</author>
+      <guid>/post/install-qgis-with-anaconda/</guid>
+      <description>In grad school, I enjoyed working on spatial analyses using R and ArcMap. Since I am no longer and grad school, and have no appetite in spending hundreds of dollars to use software, I would like to get more comfortable using QGIS, which is free, open source, and available on Windows, Mac, and Linux.
+Recently, I installed Bodhi Linux on my old laptop. It&amp;rsquo;s a lightweight Linux distro, which is useful since my laptop is already 8 years old.</description>
+    </item>
     
     <item>
       <title>Changes in Tenure among Single Family Housing Units in Bexar County, 2007-2016</title>
