@@ -1,8 +1,8 @@
 ---
-title: Change Shapefile Projection using QGIS
+title: Open Shapefile in QGIS
 author: Carlos
 date: '2018-06-13'
-slug: change-shapefile-projection-using-qgis
+slug: open-shapefile-in-qgis
 categories:
   - GIS
 tags:

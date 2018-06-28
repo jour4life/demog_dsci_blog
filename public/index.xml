@@ -13,11 +13,11 @@
     
     
     <item>
-      <title>Change Shapefile Projection using QGIS</title>
-      <link>/post/change-shapefile-projection-using-qgis/</link>
+      <title>Open Shapefile in QGIS</title>
+      <link>/post/open-shapefile-in-qgis/</link>
       <pubDate>Wed, 13 Jun 2018 00:00:00 +0000</pubDate>
       <author>jour4life@gmail.com (Carlos Valenzuela)</author>
-      <guid>/post/change-shapefile-projection-using-qgis/</guid>
+      <guid>/post/open-shapefile-in-qgis/</guid>
       <description>QGIS is great option for producing maps. One can create maps by downloading shapefiles and opening them in QGIS.
 In this exercise, I downloaded a shapefile of all blockgroups in Texas from the U.S. Census Bureau (link). The file is a geodatabase and contains some sociodemographic data.
 
