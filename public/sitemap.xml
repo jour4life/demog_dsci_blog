@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>/post/take-subset-of-shapefile-geography-qgis/</loc>
+    <lastmod>2018-07-04T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/post/open-shapefile-in-qgis/</loc>
     <lastmod>2018-06-13T00:00:00+00:00</lastmod>
   </url>
@@ -49,7 +54,7 @@
   
   <url>
     <loc>/</loc>
-    <lastmod>2018-06-13T00:00:00+00:00</lastmod>
+    <lastmod>2018-07-04T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -61,7 +66,7 @@
   
   <url>
     <loc>/tags/census/</loc>
-    <lastmod>2018-06-08T00:00:00+00:00</lastmod>
+    <lastmod>2018-07-04T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -73,13 +78,13 @@
   
   <url>
     <loc>/tags/gis/</loc>
-    <lastmod>2018-06-13T00:00:00+00:00</lastmod>
+    <lastmod>2018-07-04T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/categories/gis/</loc>
-    <lastmod>2018-06-13T00:00:00+00:00</lastmod>
+    <lastmod>2018-07-04T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -90,7 +95,7 @@
   
   <url>
     <loc>/post/</loc>
-    <lastmod>2018-06-13T00:00:00+00:00</lastmod>
+    <lastmod>2018-07-04T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -102,7 +107,7 @@
   
   <url>
     <loc>/tags/qgis/</loc>
-    <lastmod>2018-06-13T00:00:00+00:00</lastmod>
+    <lastmod>2018-07-04T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -126,7 +131,7 @@
   
   <url>
     <loc>/tags/</loc>
-    <lastmod>2018-06-08T00:00:00+00:00</lastmod>
+    <lastmod>2018-07-04T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
