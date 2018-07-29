@@ -1,0 +1,141 @@
+---
+title: Age-Sex Pyramids with Python and R!
+author: Carlos
+date: '2018-07-29'
+slug: age-sex-pyramids-with-python-and-r
+categories:
+  - Census
+  - Analysis
+tags:
+  - Census
+  - Python
+  - R
+subtitle: ''
+---
+
+
+
+<p>The <em>reticulate</em> package was made available earlier this year. This package allows us to use R and Python within RStudio!</p>
+<p>In this post, I provide an example of using Python to extract data from the US Census API to construct a population pyramid for Bexar County. Population pyramids are a good way for analyzing the age-sex composition of a population, which can give us an idea if a population is younger/older. I understand that one can make a call using to the Census API with R, but I prefer using Python for certain tasks :).</p>
+<p>First, let’s load the reticulate package</p>
+<pre class="r"><code>library(reticulate)</code></pre>
+<p>Now, I invoke python within this markdown file and run commands to extract data from the Census API. Basically, I will get all of the population estimates by age and sex.</p>
+<pre class="python"><code>import pandas as pd
+# List of variables
+var = &#39;B01001_&#39;
+var_list = []
+for i in range(1,50):
+    tmp_var = var + str(i).zfill(3) + &#39;E&#39;
+    
+    var_list.append(tmp_var)
+var_list_s = str(var_list).strip(&#39;[]&#39;)
+var_list_p = &#39;,&#39;.join(var_list)</code></pre>
+<p>I create a variable to get the age-sex population estimates data for Bexar County Texas and will store as a pandas dataframe.</p>
+<pre class="python"><code># Census API call
+url_link = &#39;https://api.census.gov/data/2016/acs/acs5?get=NAME,&#39; + var_list_p + &#39;&amp;for=county:029&amp;in=state:48&amp;key=dbcf37f4c47be0a2a720ec01f7c32e6792846be0&#39;
+       
+# Get block group info
+county_data = pd.read_json(url_link)
+county_data = pd.DataFrame(county_data[1:])</code></pre>
+<p>Now that we have our pandas dataframe, let’s take a look at the data</p>
+<pre class="python"><code>print(county_data.head())</code></pre>
+<pre><code>##                     0        1       2      3      4      5      6      7   \
+## 1  Bexar County, Texas  1858699  915173  69325  69177  68744  40755  29531   
+## 
+##       8      9  ...      42     43     44     45     46     47     48     49  \
+## 1  16608  15126 ...   20409  27556  17722  21162  27059  20708  16432  16267   
+## 
+##    50   51  
+## 1  48  029  
+## 
+## [1 rows x 52 columns]</code></pre>
+<p>We see that we need to rename the columns.</p>
+<pre class="python"><code>column_names = [&#39;NAME&#39;]
+column_names.extend(var_list)
+geo_names = [&#39;STATE&#39;,&#39;COUNTY&#39;]
+column_names.extend(geo_names)
+county_data.columns = column_names
+print(county_data.head())
+# Output to .csv file</code></pre>
+<pre><code>##                   NAME B01001_001E B01001_002E B01001_003E B01001_004E  \
+## 1  Bexar County, Texas     1858699      915173       69325       69177   
+## 
+##   B01001_005E B01001_006E B01001_007E B01001_008E B01001_009E  ...    \
+## 1       68744       40755       29531       16608       15126  ...     
+## 
+##   B01001_042E B01001_043E B01001_044E B01001_045E B01001_046E B01001_047E  \
+## 1       20409       27556       17722       21162       27059       20708   
+## 
+##   B01001_048E B01001_049E STATE COUNTY  
+## 1       16432       16267    48    029  
+## 
+## [1 rows x 52 columns]</code></pre>
+<pre class="python"><code>county_data.to_csv(&#39;../..//content/data/bexar_county_age_sex_pop.csv&#39;)</code></pre>
+<p>Great!</p>
+<p>Let’s use R to create our population pyramids.</p>
+<p>Load the <em>dplyr</em> and <em>ggplot2</em> packages</p>
+<p>Then, we read in the .csv file we created with Python and do some data manipulation by renaming columns, reshaping the dataset, and plotting</p>
+<pre class="r"><code>county_data &lt;- suppressMessages(read_csv(&#39;../..//content/data/bexar_county_age_sex_pop.csv&#39;))</code></pre>
+<pre><code>## Warning: Missing column names filled in: &#39;X1&#39; [1]</code></pre>
+<pre class="r"><code># Create age group list
+age_gp &lt;- c(&#39;&lt; 5&#39;, &#39;5-9&#39;,&#39;10-14&#39;,&#39;15-19&#39;,&#39;20-24&#39;,&#39;25-29&#39;,
+            &#39;30-34&#39;,&#39;35-39&#39;,&#39;40-44&#39;,&#39;45-49&#39;,&#39;50-54&#39;,&#39;55-59&#39;,
+            &#39;60-64&#39;,&#39;65-69&#39;,&#39;70-74&#39;,&#39;75-79&#39;,&#39;80-84&#39;,&#39;85+&#39;)
+
+county_data &lt;- county_data %&gt;%
+  mutate(pop_15to19_m = B01001_006E + B01001_007E,
+         pop_20to24_m = B01001_008E + B01001_009E + B01001_010E,
+         pop_60to64_m = B01001_018E + B01001_019E,
+         pop_65to69_m = B01001_020E + B01001_021E,
+         
+         pop_15to19_f = B01001_030E + B01001_031E,
+         pop_20to24_f = B01001_032E + B01001_033E + B01001_034E,
+         pop_60to64_f = B01001_042E + B01001_043E,
+         pop_65to69_f = B01001_044E + B01001_045E,
+         FIPS = paste(STATE, COUNTY, sep=&#39;&#39;)) %&gt;%
+  
+  select(FIPS, B01001_001E, B01001_003E:B01001_005E, 
+         pop_15to19_m, pop_20to24_m, B01001_011E:B01001_017E,
+         pop_60to64_m, pop_65to69_m, B01001_022E:B01001_025E,
+         B01001_027E:B01001_029E, 
+         pop_15to19_f, pop_20to24_f, B01001_035E:B01001_041E,
+         pop_60to64_f, pop_65to69_f, B01001_046E:B01001_049E) %&gt;%
+  
+  tidyr::gather(key = Variable, value = Pop_Count, -FIPS, -B01001_001E) %&gt;%
+  
+  mutate(var_order = rep(1:18, each=2)) %&gt;%
+  
+  arrange(FIPS, var_order) %&gt;%
+  
+  mutate(Age_Group = factor(rep(1:18, 2), 
+                            labels=age_gp),
+         Sex = factor(rep(rep(1:2, each=18)),
+                      labels=c(&#39;Male&#39;,&#39;Female&#39;)),
+         pct_pop = Pop_Count / B01001_001E,
+         pct_pop = ifelse(Sex == &#39;Male&#39;, pct_pop*-1,
+                          pct_pop))
+
+head(county_data)</code></pre>
+<pre><code>## # A tibble: 6 x 8
+##   FIPS  B01001_001E Variable   Pop_Count var_order Age_Group Sex   pct_pop
+##   &lt;chr&gt;       &lt;int&gt; &lt;chr&gt;          &lt;int&gt;     &lt;int&gt; &lt;fct&gt;     &lt;fct&gt;   &lt;dbl&gt;
+## 1 48029     1858699 B01001_00…     69325         1 &lt; 5       Male  -0.0373
+## 2 48029     1858699 B01001_00…     69177         1 5-9       Male  -0.0372
+## 3 48029     1858699 B01001_00…     68744         2 10-14     Male  -0.0370
+## 4 48029     1858699 pop_15to1…     70286         2 15-19     Male  -0.0378
+## 5 48029     1858699 pop_20to2…     74934         3 20-24     Male  -0.0403
+## 6 48029     1858699 B01001_01…     75940         3 25-29     Male  -0.0409</code></pre>
+<p>Plot!</p>
+<pre class="r"><code>ggplot(county_data,
+       aes(x = Age_Group, y = pct_pop, fill = Sex)) + 
+  geom_bar(subset = (county_data$Sex == &quot;Female&quot;), stat = &quot;identity&quot;) + 
+  geom_bar(subset = (county_data$Sex == &quot;Male&quot;), stat = &quot;identity&quot;) + 
+  coord_flip() + 
+  scale_fill_brewer(palette = &quot;Set1&quot;) + 
+  theme_bw() +
+  ylab(&#39;Percent&#39;) +
+  xlab(&#39;Age Group&#39;)</code></pre>
+<pre><code>## Warning: Ignoring unknown parameters: subset
+
+## Warning: Ignoring unknown parameters: subset</code></pre>
+<p><img src="/post/2018-07-29-age-sex-pyramids-with-python-and-r_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>

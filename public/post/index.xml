@@ -7,10 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <managingEditor>jour4life@gmail.com (Carlos Valenzuela)</managingEditor>
     <webMaster>jour4life@gmail.com (Carlos Valenzuela)</webMaster>
-    <lastBuildDate>Wed, 18 Jul 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 29 Jul 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Age-Sex Pyramids with Python and R!</title>
+      <link>/post/age-sex-pyramids-with-python-and-r/</link>
+      <pubDate>Sun, 29 Jul 2018 00:00:00 +0000</pubDate>
+      <author>jour4life@gmail.com (Carlos Valenzuela)</author>
+      <guid>/post/age-sex-pyramids-with-python-and-r/</guid>
+      <description>The reticulate package was made available earlier this year. This package allows us to use R and Python within RStudio!
+In this post, I provide an example of using Python to extract data from the US Census API to construct a population pyramid for Bexar County. Population pyramids are a good way for analyzing the age-sex composition of a population, which can give us an idea if a population is younger/older.</description>
+    </item>
     
     <item>
       <title>Change Shapefile Projection in QGIS</title>
