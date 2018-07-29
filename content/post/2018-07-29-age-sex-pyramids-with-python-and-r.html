@@ -15,7 +15,7 @@ subtitle: ''
 
 
 
-<p>The <em>reticulate</em> package was made available earlier this year. This package allows us to use R and Python within RStudio!</p>
+<p>The <a href="https://rstudio.github.io/reticulate/"><em>reticulate</em></a> package was made available earlier this year. This package allows us to use R and Python within RStudio!</p>
 <p>In this post, I provide an example of using Python to extract data from the US Census API to construct a population pyramid for Bexar County. Population pyramids are a good way for analyzing the age-sex composition of a population, which can give us an idea if a population is younger/older. I understand that one can make a call using to the Census API with R, but I prefer using Python for certain tasks :).</p>
 <p>First, let’s load the reticulate package</p>
 <pre class="r"><code>library(reticulate)</code></pre>
@@ -139,3 +139,4 @@ head(county_data)</code></pre>
 
 ## Warning: Ignoring unknown parameters: subset</code></pre>
 <p><img src="/post/2018-07-29-age-sex-pyramids-with-python-and-r_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>Thanks to <a href="https://rpubs.com/walkerke/pyramids_ggplot2">Kyle Walker</a> for providing an example for creating nice population pyramids with ggplot!</p>
