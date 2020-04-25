@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Carlos Valenzuela</title>
@@ -7,10 +7,20 @@
     <generator>Hugo -- gohugo.io</generator>
     <managingEditor>jour4life@gmail.com (Carlos Valenzuela)</managingEditor>
     <webMaster>jour4life@gmail.com (Carlos Valenzuela)</webMaster>
-    <lastBuildDate>Sun, 29 Jul 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 25 Apr 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>I&#39;m Back!</title>
+      <link>/post/i-m-back/</link>
+      <pubDate>Sat, 25 Apr 2020 00:00:00 +0000</pubDate>
+      <author>jour4life@gmail.com (Carlos Valenzuela)</author>
+      <guid>/post/i-m-back/</guid>
+      <description>I&amp;rsquo;m back! It&amp;rsquo;s been nearly two years since my last post. There have been a lot of great changes in my life. As a result, I did not have much time to dedicate to this blog. Because I&amp;rsquo;m always busy, I believe that my R and Python coding skills have been lagging behind.
+I will restart my blog in the next few days and hope to start working on some fun projects during my leisure time.</description>
+    </item>
     
     <item>
       <title>Age-Sex Pyramids with Python and R!</title>
@@ -30,7 +40,6 @@ In this post, I provide an example of using Python to extract data from the US C
       <guid>/post/change-shapefile-projection-in-qgis/</guid>
       <description>After creating our Bexar County shapefile, by taking the subset of the Texas shapefile (see here), I wanted the shapefile to have a different projection, especially one that is good for showing smaller geographies, such as counties. For Bexar County, the projection I want to use is UTM.
 First, open QGIS and click on the EPGS icon on the bottom far right corner.
-
 Enable on the fly projection (i.e. make sure box is checked), select NAD27/UTM zone 14N, and click OK (or press ENTER)</description>
     </item>
     
@@ -42,7 +51,6 @@ Enable on the fly projection (i.e. make sure box is checked), select NAD27/UTM z
       <guid>/post/take-subset-of-shapefile-geography-qgis/</guid>
       <description>In the last post, we opened a shapefile that contained all census block groups in Texas in QGIS. In this post, I provide steps for taking a subset of a shapefile, particularly by keeping block groups located in Bexar County.
 First, open the Texas shapefile and hover over the zoom in icon, which is a magnifying glass with a plus sign inside
-
 Then, zoom in on the region of Texas where Bexar County is located</description>
     </item>
     
@@ -54,7 +62,6 @@ Then, zoom in on the region of Texas where Bexar County is located</description>
       <guid>/post/open-shapefile-in-qgis/</guid>
       <description>QGIS is great option for producing maps. One can create maps by downloading shapefiles and opening them in QGIS.
 In this exercise, I downloaded a shapefile of all blockgroups in Texas from the U.S. Census Bureau (link). The file is a geodatabase and contains some sociodemographic data.
-
 Drag the geodatabase to QGIS and a dialogue box will open
 Then, click Select All
 Click OK
